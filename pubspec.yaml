@@ -1,0 +1,26 @@
+name: time_since
+description: View the exact time since a moment in the past.
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.0
+  device_info: ^0.2.0
+  flutter_launcher_icons: ^0.5.0
+  shared_preferences: ^0.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path_android: 'assets/icon-android.png'
+  image_path_ios: 'assets/icon-ios.png'
+  adaptive_icon_background: '#FFFFFF'
+  adaptive_icon_foreground: 'assets/icon-adaptive.png'
