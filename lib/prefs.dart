@@ -22,9 +22,9 @@
 library prefs;
 
 import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// The App's Preferences.
 class Prefs {
   static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -83,72 +83,72 @@ class Prefs {
     return value;
   }
 
-  static bool getBool(String key) {
+  static bool getBool(String key, [bool fallback = false]) {
     assert(_initCalled, "Prefs.init() must be called first in an initState() preferably!");
     assert(_prefsInstance != null, "Maybe call Prefs.getBoolF(key) instead. SharedPreferences not ready yet!");
-    return _prefsInstance.getBool(key) ?? false;
+    return _prefsInstance.getBool(key) ?? fallback;
   }
 
   /// Returns a Future.
-  static Future<bool> getBoolF(String key) async {
+  static Future<bool> getBoolF(String key, [bool fallback = false]) async {
     bool value;
     if (_prefsInstance == null) {
       var instance = await _prefs;
-      value = instance.getBool(key) ?? false;
+      value = instance.getBool(key) ?? fallback;
     } else {
       value = getBool(key);
     }
     return value;
   }
 
-  static int getInt(String key) {
+  static int getInt(String key, [int fallback = 0]) {
     assert(_initCalled, "Prefs.init() must be called first in an initState() preferably!");
     assert(_prefsInstance != null, "Maybe call Prefs.getIntF(key) instead. SharedPreferences not ready yet!");
-    return _prefsInstance.getInt(key) ?? 0;
+    return _prefsInstance.getInt(key) ?? fallback;
   }
 
   /// Returns a Future.
-  static Future<int> getIntF(String key) async {
+  static Future<int> getIntF(String key, [int fallback = 0]) async {
     int value;
     if (_prefsInstance == null) {
       var instance = await _prefs;
-      value = instance.getInt(key) ?? 0;
+      value = instance.getInt(key) ?? fallback;
     } else {
       value = getInt(key);
     }
     return value;
   }
 
-  static double getDouble(String key) {
+  static double getDouble(String key, [double fallback = 0.0]) {
     assert(_initCalled, "Prefs.init() must be called first in an initState() preferably!");
     assert(_prefsInstance != null, "Maybe call Prefs.getDoubleF(key) instead. SharedPreferences not ready yet!");
-    return _prefsInstance.getDouble(key) ?? 0.0;
+    return _prefsInstance.getDouble(key) ?? fallback;
   }
 
   /// Returns a Future.
-  static Future<double> getDoubleF(String key) async {
+  static Future<double> getDoubleF(String key, [double fallback = 0.0]) async {
     double value;
     if (_prefsInstance == null) {
       var instance = await _prefs;
-      value = instance.getDouble(key) ?? 0.0;
+      value = instance.getDouble(key) ?? fallback;
     } else {
       value = getDouble(key);
     }
     return value;
   }
 
-  static String getString(String key) {
+  static String getString(String key, [String fallback = ""]) {
     assert(_initCalled, "Prefs.init() must be called first in an initState() preferably!");
     assert(_prefsInstance != null, "Maybe call Prefs.getStringF(key)instead. SharedPreferences not ready yet!");
-    return _prefsInstance.getString(key) ?? "";
+    return _prefsInstance.getString(key) ?? fallback;
   }
 
   /// Returns a Future.
-  static Future<String> getStringF(String key) async {
+  static Future<String> getStringF(String key, [String fallback = ""]) async {
     String value;
     if (_prefsInstance == null) {
       var instance = await _prefs;
-      value = instance.getString(key) ?? "";
+      value = instance.getString(key) ?? fallback;
     } else {
       value = getString(key);
     }
@@ -158,7 +158,7 @@ class Prefs {
   static List<String> getStringList(String key) {
     assert(_initCalled, "Prefs.init() must be called first in an initState() preferably!");
     assert(_prefsInstance != null, "Maybe call Prefs.getStringListF(key) instead. SharedPreferences not ready yet!");
-    return _prefsInstance.getStringList(key) ?? [""];
+    return _prefsInstance.getStringList(key) ?? [];
   }
 
   /// Returns a Future.
@@ -166,7 +166,7 @@ class Prefs {
     List<String> value;
     if (_prefsInstance == null) {
       var instance = await _prefs;
-      value = instance.getStringList(key) ?? [""];
+      value = instance.getStringList(key) ?? [];
     } else {
       value = getStringList(key);
     }
