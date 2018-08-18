@@ -1,66 +1,66 @@
 import 'package:flutter/material.dart';
 
 class CountUp extends AnimatedWidget {
-  CountUp({Key key, this.animation}) : super(key: key, listenable: animation);
+  CountUp({Key key, Listenable listenable, this.startTime}) : super(key: key, listenable: listenable);
 
-  final Animation<int> animation;
+  static const int SECONDS_PER_YEAR = 365 * Duration.secondsPerDay;
+  static const int SECONDS_PER_MONTH = 30 * Duration.secondsPerDay;
+  static const int SECONDS_PER_WEEK = 7 * Duration.secondsPerDay;
+  static const int SECONDS_PER_DAY = Duration.secondsPerDay;
+  static const int SECONDS_PER_HOUR = Duration.secondsPerHour;
+  static const int SECONDS_PER_MINUTE = Duration.secondsPerMinute;
 
-  final int secondsPerYear = 365 * Duration.secondsPerDay;
-  final int secondsPerMonth = 30 * Duration.secondsPerDay;
-  final int secondsPerWeek = 7 * Duration.secondsPerDay;
-  final int secondsPerDay = Duration.secondsPerDay;
-  final int secondsPerHour = Duration.secondsPerHour;
-  final int secondsPerMinute = Duration.secondsPerMinute;
+  final DateTime startTime;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      formatText(),
+      buildText(),
       style: TextStyle(fontSize: 48.0),
     );
   }
 
-  String formatText() {
+  String buildText() {
     var builder = StringBuffer();
-    var timeInSeconds = animation.value;
+    var timeInSeconds = DateTime.now().difference(startTime).inSeconds;
 
-    var numYears = timeInSeconds ~/ secondsPerYear;
-    timeInSeconds -= numYears * secondsPerYear;
+    var numYears = timeInSeconds ~/ SECONDS_PER_YEAR;
+    timeInSeconds -= numYears * SECONDS_PER_YEAR;
     if (numYears > 0) {
       builder.write(numYears);
       builder.writeln(numYears > 1 ? " years" : " year");
     }
 
-    var numMonths = timeInSeconds ~/ secondsPerMonth;
-    timeInSeconds -= numMonths * secondsPerMonth;
+    var numMonths = timeInSeconds ~/ SECONDS_PER_MONTH;
+    timeInSeconds -= numMonths * SECONDS_PER_MONTH;
     if (numMonths > 0) {
       builder.write(numMonths);
       builder.writeln(numMonths > 1 ? " months" : " month");
     }
 
-    var numWeeks = timeInSeconds ~/ secondsPerWeek;
-    timeInSeconds -= numWeeks * secondsPerWeek;
+    var numWeeks = timeInSeconds ~/ SECONDS_PER_WEEK;
+    timeInSeconds -= numWeeks * SECONDS_PER_WEEK;
     if (numWeeks > 0) {
       builder.write(numWeeks);
       builder.writeln(numWeeks > 1 ? " weeks" : " week");
     }
 
-    var numDays = timeInSeconds ~/ secondsPerDay;
-    timeInSeconds -= numDays * secondsPerDay;
+    var numDays = timeInSeconds ~/ SECONDS_PER_DAY;
+    timeInSeconds -= numDays * SECONDS_PER_DAY;
     if (numDays > 0) {
       builder.write(numDays);
       builder.writeln(numDays > 1 ? " days" : " day");
     }
 
-    var numHours = timeInSeconds ~/ secondsPerHour;
-    timeInSeconds -= numHours * secondsPerHour;
+    var numHours = timeInSeconds ~/ SECONDS_PER_HOUR;
+    timeInSeconds -= numHours * SECONDS_PER_HOUR;
     if (numHours > 0) {
       builder.write(numHours);
       builder.writeln(numHours > 1 ? " hours" : " hour");
     }
 
-    var numMinutes = timeInSeconds ~/ secondsPerMinute;
-    timeInSeconds -= numMinutes * secondsPerMinute;
+    var numMinutes = timeInSeconds ~/ SECONDS_PER_MINUTE;
+    timeInSeconds -= numMinutes * SECONDS_PER_MINUTE;
     if (numMinutes > 0) {
       builder.write(numMinutes);
       builder.writeln(numMinutes > 1 ? " minutes" : " minute");

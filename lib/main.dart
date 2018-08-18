@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'prefs.dart';
+
+import 'package:flutter/material.dart';
+
 import 'count_up.dart';
+import 'prefs.dart';
 import 'utils.dart';
 
 void main() => runApp(TimeSinceApp());
 
 class TimeSinceApp extends StatelessWidget {
-  final String title = "Time Since";
-
   @override
   Widget build(BuildContext context) {
     Utils.initStatusBar();
 
     return MaterialApp(
-      title: title,
+      title: "Time Since",
       theme: ThemeData(primarySwatch: Colors.blue),
       home: MainActivity(),
     );
@@ -28,7 +28,6 @@ class MainActivity extends StatefulWidget {
 
 class _MainActivityState extends State<MainActivity> with TickerProviderStateMixin {
   static const PREF_START_TIME = 'start_time';
-  static const ANIMATION_DURATION = Duration.secondsPerDay * 999;
 
   AnimationController controller;
 
@@ -38,100 +37,79 @@ class _MainActivityState extends State<MainActivity> with TickerProviderStateMix
     Prefs.init();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: ANIMATION_DURATION),
+      duration: Duration(days: 999)
     );
-    _loadStartTime();
+    controller.forward();
   }
 
   @override
   void dispose() {
     super.dispose();
     Prefs.dispose();
+    controller.dispose();
   }
 
-  void _loadStartTime() async {
-    var startTimeMillis = await Prefs.getIntF(PREF_START_TIME);
-
-    if (startTimeMillis == 0) {
-      _setStartTime(DateTime.now());
-    } else {
-      _syncStartTime(startTimeMillis);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [_buildCountUp()],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showResetStartTimeDialog,
+        tooltip: 'Update',
+        child: Icon(Icons.update),
+      ),
+    );
   }
 
-  void _setStartTime(DateTime startTime) async {
-    var startTimeMillis = startTime.millisecondsSinceEpoch;
-    await Prefs.setInt(PREF_START_TIME, startTimeMillis);
-    _syncStartTime(startTimeMillis);
+  FutureBuilder<int> _buildCountUp() {
+    return FutureBuilder<int>(
+      future: _getStartTime(),
+      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+        if (snapshot.hasData) {
+          return CountUp(
+            listenable: controller,
+            startTime: DateTime.fromMillisecondsSinceEpoch(snapshot.data),
+          );
+        }
+      },
+    );
   }
 
-  void _syncStartTime(int startTimeMillis) {
-    var nowMillis = DateTime.now().millisecondsSinceEpoch;
-    var secondsSince = (nowMillis - startTimeMillis) / Duration.millisecondsPerSecond;
-    controller.forward(from: secondsSince / ANIMATION_DURATION);
-  }
-
-  Future<Null> _showResetStartTimeDialog() async {
-    return showDialog(
+  void _showResetStartTimeDialog() async {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Reset timer?'),
-          content: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  children: <Widget>[
-                    ButtonTheme.bar(
-                      child: FlatButton(
-                        child: Text('Set to now'),
-                        onPressed: () {
-                          _setStartTime(DateTime.now());
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    )
-                  ]
-                ),
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  children: <Widget>[
-                    ButtonTheme.bar(
-                      child: FlatButton(
-                        child: Text('Set to custom time'),
-                        onPressed: () {
-                          _showDateTimePicker();
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    )
-                  ]
-                ),
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  children: <Widget>[
-                    ButtonTheme.bar(
-                      child: FlatButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    )
-                  ]
-                )
-              ],
+          title: Text('Set the timer to...'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Now'),
+              onPressed: () {
+                _setStartTime(DateTime.now());
+                Navigator.of(context).pop();
+              },
             ),
-          ),
+            FlatButton(
+              child: Text('Custom time'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _showDateTimePicker();
+              },
+            )
+          ]
         );
       },
     );
   }
 
-  Future<Null> _showDateTimePicker() async {
+  void _showDateTimePicker() async {
     var now = DateTime.now();
-    return showDatePicker(
+    showDatePicker(
       context: context,
       initialDate: now,
       firstDate: DateTime.fromMillisecondsSinceEpoch(0),
@@ -154,24 +132,16 @@ class _MainActivityState extends State<MainActivity> with TickerProviderStateMix
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CountUp(
-              animation: StepTween(begin: 0, end: ANIMATION_DURATION).animate(controller),
-            )
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showResetStartTimeDialog,
-        tooltip: 'Reset',
-        child: Icon(Icons.update),
-      ),
-    );
+  void _setStartTime(DateTime startTime) async {
+    await Prefs.setInt(PREF_START_TIME, startTime.millisecondsSinceEpoch);
+    setState(() { /* Force this widget's state to rebuild. */ });
+  }
+
+  Future<int> _getStartTime() async {
+    var startTimeMillis = await Prefs.getIntF(PREF_START_TIME, -1);
+    if (startTimeMillis == -1) {
+      _setStartTime(DateTime.fromMillisecondsSinceEpoch(startTimeMillis));
+    }
+    return startTimeMillis;
   }
 }
