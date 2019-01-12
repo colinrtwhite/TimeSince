@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +23,7 @@ class CountUp extends AnimatedWidget {
       padding: EdgeInsets.symmetric(horizontal: 48.0),
       child: AutoSizeText(
         result.text,
-        maxLines: result.numLines,
+        maxLines: max(result.numLines, 1),
         style: TextStyle(fontSize: 64.0),
       ),
     );
