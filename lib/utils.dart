@@ -6,19 +6,26 @@ import 'package:flutter/services.dart';
 
 class Utils {
 
-  static void initStatusBar() async {
+  static void initSystemUIOverlayStyle() async {
     if (!Platform.isAndroid) {
       return;
     }
 
-    DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
 
-    if (androidInfo.version.sdkInt > 23) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark
-      ));
+    var style = SystemUiOverlayStyle.dark.copyWith(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark
+    );
+
+    if (androidInfo.version.sdkInt > 27) {
+      style = style.copyWith(
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarDividerColor: Colors.black
+      );
     }
+
+    SystemChrome.setSystemUIOverlayStyle(style);
   }
 }

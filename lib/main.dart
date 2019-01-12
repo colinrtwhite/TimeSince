@@ -1,52 +1,52 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-
-import 'count_up.dart';
-import 'prefs.dart';
-import 'utils.dart';
+import 'package:time_since/constants.dart';
+import 'package:time_since/count_up.dart';
+import 'package:time_since/preference_container.dart';
+import 'package:time_since/prefs.dart';
+import 'package:time_since/utils.dart';
 
 void main() => runApp(TimeSinceApp());
 
 class TimeSinceApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Utils.initStatusBar();
+    Utils.initSystemUIOverlayStyle();
 
-    return MaterialApp(
-      title: "Time Since",
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MainActivity(),
+    return PreferenceContainer(
+      child: MaterialApp(
+        title: 'Time Since',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: MainActivity(),
+      ),
     );
   }
 }
 
 class MainActivity extends StatefulWidget {
   @override
-  _MainActivityState createState() => _MainActivityState();
+  MainActivityState createState() => MainActivityState();
 }
 
-class _MainActivityState extends State<MainActivity> with TickerProviderStateMixin {
-  static const PREF_START_TIME = 'start_time';
+class MainActivityState extends State<MainActivity> with TickerProviderStateMixin {
 
   AnimationController controller;
+  DateTime startTime;
 
   @override
   void initState() {
     super.initState();
-    Prefs.init();
     controller = AnimationController(
       vsync: this,
       duration: Duration(days: 999)
     );
     controller.forward();
+    startTime = _getStartTime();
   }
 
   @override
   void dispose() {
-    super.dispose();
-    Prefs.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,7 +55,12 @@ class _MainActivityState extends State<MainActivity> with TickerProviderStateMix
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [_buildCountUp()],
+          children: <Widget>[
+            CountUp(
+              listenable: controller,
+              startTime: startTime,
+            )
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -63,20 +68,6 @@ class _MainActivityState extends State<MainActivity> with TickerProviderStateMix
         tooltip: 'Update',
         child: Icon(Icons.update),
       ),
-    );
-  }
-
-  FutureBuilder<int> _buildCountUp() {
-    return FutureBuilder<int>(
-      future: _getStartTime(),
-      builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-        if (snapshot.hasData) {
-          return CountUp(
-            listenable: controller,
-            startTime: DateTime.fromMillisecondsSinceEpoch(snapshot.data),
-          );
-        }
-      },
     );
   }
 
@@ -122,8 +113,9 @@ class _MainActivityState extends State<MainActivity> with TickerProviderStateMix
         ).then((time) {
           if (time != null) {
             var newStartTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-            if (newStartTime.isAfter(DateTime.now())) {
-              newStartTime = DateTime.now();
+            var now = DateTime.now();
+            if (newStartTime.isAfter(now)) {
+              newStartTime = now;
             }
             _setStartTime(newStartTime);
           }
@@ -133,15 +125,20 @@ class _MainActivityState extends State<MainActivity> with TickerProviderStateMix
   }
 
   void _setStartTime(DateTime startTime) async {
-    await Prefs.setInt(PREF_START_TIME, startTime.millisecondsSinceEpoch);
-    setState(() { /* Force this widget's state to rebuild. */ });
+    Prefs.setInt(Constants.PREF_START_TIME, startTime.millisecondsSinceEpoch);
+    setState(() {
+      this.startTime = startTime;
+    });
   }
 
-  Future<int> _getStartTime() async {
-    var startTimeMillis = await Prefs.getIntF(PREF_START_TIME, -1);
+  DateTime _getStartTime() {
+    var startTimeMillis = Prefs.getInt(Constants.PREF_START_TIME, -1);
     if (startTimeMillis == -1) {
-      _setStartTime(DateTime.fromMillisecondsSinceEpoch(startTimeMillis));
+      var now = DateTime.now();
+      _setStartTime(now);
+      return now;
+    } else {
+      return DateTime.fromMillisecondsSinceEpoch(startTimeMillis);
     }
-    return startTimeMillis;
   }
 }
