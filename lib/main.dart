@@ -99,17 +99,16 @@ class MainActivityState extends State<MainActivity> with TickerProviderStateMixi
   }
 
   void _showDateTimePicker() async {
-    var now = DateTime.now();
     showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: startTime,
       firstDate: DateTime.fromMillisecondsSinceEpoch(0),
-      lastDate: now,
+      lastDate: DateTime.now(),
     ).then((date) {
       if (date != null) {
         showTimePicker(
           context: context,
-          initialTime: TimeOfDay.now()
+          initialTime: TimeOfDay.fromDateTime(startTime)
         ).then((time) {
           if (time != null) {
             var newStartTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
