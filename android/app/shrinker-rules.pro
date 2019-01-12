@@ -12,25 +12,20 @@
 -allowaccessmodification
 -flattenpackagehierarchy
 -mergeinterfacesaggressively
--optimizationpasses 10 # If a pass finishes and no optimization is made, then it skips the rest of the passes.
--optimizations !class/merging/*, !field/*
 
-# Work around for Android build tools bug, see https://issuetracker.google.com/issues/37070898
--dontnote android.net.http.*
--dontnote org.apache.commons.codec.**
--dontnote org.apache.http.**
+# Disable notation to reduce log spam.
+-dontnote **
 
 # Kotlin
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
     static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
 }
--dontnote kotlin.**
 -dontwarn kotlin.**
 
 # Flutter
 -keep class io.flutter.app.** { *; }
--keep class io.flutter.plugin.**  { *; }
--keep class io.flutter.util.**  { *; }
--keep class io.flutter.view.**  { *; }
--keep class io.flutter.**  { *; }
--keep class io.flutter.plugins.**  { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
