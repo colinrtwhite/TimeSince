@@ -7,7 +7,6 @@ dependencies:
 
   auto_size_text: '>=0.3.0'
   cupertino_icons: '>=0.1.0'
-  device_info: '>=0.2.0'
   flutter_launcher_icons: '>=0.6.0'
   shared_preferences: '>=0.4.0'
 
