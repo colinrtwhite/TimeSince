@@ -19,7 +19,6 @@
 # of the Proguard configuration file (except that the other file has
 # flags to turn off optimization).
 
--android
 -dontpreverify
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses

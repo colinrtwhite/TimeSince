@@ -16,12 +16,6 @@
 # Disable notation to reduce log spam.
 -dontnote **
 
-# Kotlin
--assumenosideeffects class kotlin.jvm.internal.Intrinsics {
-    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
-}
--dontwarn kotlin.**
-
 # Flutter
 -keep class io.flutter.app.** { *; }
 -keep class io.flutter.plugin.** { *; }
