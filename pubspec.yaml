@@ -1,6 +1,9 @@
 name: time_since
 description: View the exact time since a moment in the past.
 
+environment:
+  sdk: '>=2.10.0'
+
 dependencies:
   flutter:
     sdk: flutter
