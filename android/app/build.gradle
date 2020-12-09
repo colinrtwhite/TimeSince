@@ -48,6 +48,11 @@ android {
             proguardFiles 'shrinker-android-optimize.pro', 'shrinker-rules.pro'
         }
     }
+
+    // https://github.com/flutter/flutter/issues/58247
+    lintOptions {
+        checkReleaseBuilds false
+    }
 }
 
 flutter {
